@@ -3,11 +3,19 @@
 import { useEffect, useState, useRef } from 'react';
 import { ProtectedRoute, SignOutButton, useAuth } from '@/components/auth';
 import { createBrowserClient } from '@/lib/supabase/supabaseClient';
+import { AppLayout } from '@/components/AppLayout';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DashboardPage() {
   return (
     <ProtectedRoute>
-      <Dashboard />
+      <AppLayout>
+        <Dashboard />
+      </AppLayout>
     </ProtectedRoute>
   );
 }
@@ -121,146 +129,161 @@ function Dashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <div className="flex items-center space-x-4">
-            <div className="text-sm text-gray-600">
-              Welcome, {user?.email}
-            </div>
-            <SignOutButton />
-          </div>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-muted-foreground">
+            Welcome, {user?.email}
+          </span>
+          <SignOutButton />
         </div>
-      </header>
+      </div>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            {/* Stats Overview */}
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="px-4 py-5 sm:p-6">
-                <h2 className="text-lg font-medium text-gray-900">Overview</h2>
-                <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
-                  {isLoading ? (
-                    // Skeleton loaders for stats
-                    <>
-                      {[...Array(3)].map((_, index) => (
-                        <div key={index} className="bg-gray-50 overflow-hidden shadow rounded-lg">
-                          <div className="px-4 py-5 sm:p-6">
-                            <div className="h-4 bg-gray-200 rounded w-3/4 mb-3 animate-pulse"></div>
-                            <div className="h-8 bg-gray-200 rounded w-1/3 animate-pulse"></div>
-                          </div>
-                        </div>
-                      ))}
-                    </>
-                  ) : (
-                    <>
-                      <div className="bg-gray-50 overflow-hidden shadow rounded-lg">
-                        <div className="px-4 py-5 sm:p-6">
-                          <dt className="text-sm font-medium text-gray-500 truncate">Total Candidates</dt>
-                          <dd className="mt-1 text-3xl font-semibold text-gray-900">12</dd>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Stats Overview */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Candidates</CardTitle>
+            <CardDescription>Current candidate pool</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <Skeleton className="h-12 w-24" />
+            ) : (
+              <p className="text-3xl font-bold">12</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Active Jobs</CardTitle>
+            <CardDescription>Open positions</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <Skeleton className="h-12 w-24" />
+            ) : (
+              <p className="text-3xl font-bold">8</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Placements</CardTitle>
+            <CardDescription>Successful matches</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <Skeleton className="h-12 w-24" />
+            ) : (
+              <p className="text-3xl font-bold">5</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        {/* Recent Candidates */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Candidates</CardTitle>
+            <CardDescription>Latest additions to your talent pool</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {isLoading ? (
+                <ul className="divide-y divide-border">
+                  {[...Array(3)].map((_, index) => (
+                    <li key={index} className="py-4">
+                      <div className="flex items-center space-x-4">
+                        <Skeleton className="h-8 w-8 rounded-full" />
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-[200px]" />
+                          <Skeleton className="h-3 w-[150px]" />
                         </div>
                       </div>
-                      <div className="bg-gray-50 overflow-hidden shadow rounded-lg">
-                        <div className="px-4 py-5 sm:p-6">
-                          <dt className="text-sm font-medium text-gray-500 truncate">Active Jobs</dt>
-                          <dd className="mt-1 text-3xl font-semibold text-gray-900">8</dd>
+                    </li>
+                  ))}
+                </ul>
+              ) : candidates.length > 0 ? (
+                <ul className="divide-y divide-border">
+                  {candidates.map((candidate) => (
+                    <li key={candidate.id} className="py-3">
+                      <div className="flex items-center space-x-4">
+                        <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                          {candidate.full_name.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium truncate">
+                            {candidate.full_name}
+                          </p>
+                          <p className="text-sm text-muted-foreground truncate">
+                            {candidate.email}
+                          </p>
+                        </div>
+                        <div>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            {candidate.status}
+                          </span>
                         </div>
                       </div>
-                      <div className="bg-gray-50 overflow-hidden shadow rounded-lg">
-                        <div className="px-4 py-5 sm:p-6">
-                          <dt className="text-sm font-medium text-gray-500 truncate">Placements</dt>
-                          <dd className="mt-1 text-3xl font-semibold text-gray-900">5</dd>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="py-4 text-center text-muted-foreground">No candidates found</div>
+              )}
             </div>
+          </CardContent>
+        </Card>
 
-            {/* Recent Activity */}
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="px-4 py-5 sm:p-6">
-                <h2 className="text-lg font-medium text-gray-900">Recent Activity</h2>
-                <div className="mt-5 flow-root">
-                  {isLoading ? (
-                    <ul className="-my-5 divide-y divide-gray-200">
-                      {[...Array(3)].map((_, index) => (
-                        <li key={index} className="py-4">
-                          <div className="flex items-center space-x-4">
-                            <div className="flex-shrink-0">
-                              <div className="h-8 w-8 rounded-full bg-gray-200 animate-pulse"></div>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2 animate-pulse"></div>
-                              <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
-                            </div>
-                            <div className="flex-shrink-0">
-                              <div className="h-4 w-12 bg-gray-200 rounded animate-pulse"></div>
-                            </div>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <ul className="-my-5 divide-y divide-gray-200">
-                      <li className="py-4">
-                        <div className="flex items-center space-x-4">
-                          <div className="flex-shrink-0">
-                            <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-blue-500">
-                              <span className="text-sm font-medium leading-none text-white">JD</span>
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">New candidate applied</p>
-                            <p className="text-sm text-gray-500 truncate">John Doe applied for Senior Developer</p>
-                          </div>
-                          <div className="flex-shrink-0 text-sm text-gray-500">2h ago</div>
+        {/* Recent Jobs */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Jobs</CardTitle>
+            <CardDescription>Latest job openings</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {isLoading ? (
+                <ul className="divide-y divide-border">
+                  {[...Array(3)].map((_, index) => (
+                    <li key={index} className="py-4">
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-[200px]" />
+                        <Skeleton className="h-3 w-[150px]" />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : jobs.length > 0 ? (
+                <ul className="divide-y divide-border">
+                  {jobs.map((job) => (
+                    <li key={job.id} className="py-3">
+                      <div className="flex items-center space-x-4">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium truncate">
+                            {job.title}
+                          </p>
+                          <p className="text-sm text-muted-foreground truncate">
+                            {job.company} • {job.location}
+                          </p>
                         </div>
-                      </li>
-                      <li className="py-4">
-                        <div className="flex items-center space-x-4">
-                          <div className="flex-shrink-0">
-                            <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-green-500">
-                              <span className="text-sm font-medium leading-none text-white">AC</span>
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">Interview scheduled</p>
-                            <p className="text-sm text-gray-500 truncate">Alice Cooper for UX Designer at TechCorp</p>
-                          </div>
-                          <div className="flex-shrink-0 text-sm text-gray-500">5h ago</div>
+                        <div>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {job.status}
+                          </span>
                         </div>
-                      </li>
-                      <li className="py-4">
-                        <div className="flex items-center space-x-4">
-                          <div className="flex-shrink-0">
-                            <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-purple-500">
-                              <span className="text-sm font-medium leading-none text-white">TC</span>
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">New job posted</p>
-                            <p className="text-sm text-gray-500 truncate">Product Manager at InnovateCo</p>
-                          </div>
-                          <div className="flex-shrink-0 text-sm text-gray-500">1d ago</div>
-                        </div>
-                      </li>
-                    </ul>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Recent Candidates */}
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="px-4 py-5 sm:p-6">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-lg font-medium text-gray-900">Recent Candidates</h2>
-                  <a href="/candidates" className="text-sm font-medium text-blue-600 hover:text-blue-500">View all</a>
-                </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="py-4 text-center text-muted-foreground">No jobs found</div>
+              )}
                 <div className="mt-5 flow-root">
                   {isLoading ? (
                     <ul className="-my-5 divide-y divide-gray-200">

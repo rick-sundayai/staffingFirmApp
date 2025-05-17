@@ -84,60 +84,82 @@ export default function SignInForm() {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <h2 className="text-2xl font-bold mb-6 text-center">Sign In</h2>
-        
+      <form onSubmit={handleSubmit} className="space-y-6">
         {errorMessage && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-            {errorMessage}
+          <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm">{errorMessage}</p>
+              </div>
+            </div>
           </div>
         )}
 
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-            Email
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700" htmlFor="email">
+            Email address
           </label>
           <input
-            className={`shadow appearance-none border ${formErrors.email ? 'border-red-500' : 'border-gray-300'} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
+            className={`block w-full rounded-md shadow-sm py-3 px-4 ${formErrors.email ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-300'} focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150 ease-in-out`}
             id="email"
             type="email"
             name="email"
-            placeholder="Email"
+            placeholder="you@example.com"
             value={formValues.email}
             onChange={handleChange}
             disabled={isLoading}
           />
           {formErrors.email && (
-            <p className="text-red-500 text-xs italic mt-1">{formErrors.email}</p>
+            <p className="mt-1 text-sm text-red-600">{formErrors.email}</p>
           )}
         </div>
 
-        <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-            Password
-          </label>
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <label className="block text-sm font-medium text-gray-700" htmlFor="password">
+              Password
+            </label>
+            <a href="#" className="text-sm font-medium text-blue-600 hover:text-blue-500">
+              Forgot password?
+            </a>
+          </div>
           <input
-            className={`shadow appearance-none border ${formErrors.password ? 'border-red-500' : 'border-gray-300'} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
+            className={`block w-full rounded-md shadow-sm py-3 px-4 ${formErrors.password ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-300'} focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150 ease-in-out`}
             id="password"
             type="password"
             name="password"
-            placeholder="Password"
+            placeholder="••••••••"
             value={formValues.password}
             onChange={handleChange}
             disabled={isLoading}
           />
           {formErrors.password && (
-            <p className="text-red-500 text-xs italic mt-1">{formErrors.password}</p>
+            <p className="mt-1 text-sm text-red-600">{formErrors.password}</p>
           )}
         </div>
 
-        <div className="flex items-center justify-between">
+        <div>
           <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full transition-colors duration-200"
+            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 ease-in-out disabled:opacity-70 disabled:cursor-not-allowed"
             type="submit"
             disabled={isLoading}
           >
-            {isLoading ? 'Signing in...' : 'Sign In'}
+            {isLoading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Signing in...
+              </>
+            ) : (
+              'Sign in'
+            )}
           </button>
         </div>
       </form>
